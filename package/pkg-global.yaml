@@ -17,6 +17,7 @@ spec:
     metadata:
       labels:
         app: nginx
+        color: yellow
     spec:
       containers:
       - image: nginx:1.14.2
