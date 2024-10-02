@@ -1,0 +1,19 @@
+name: "projects/{{ project_id }}/locations/{{ region }}/fleetPackages/{{ package_name }}"
+resourceBundleSelector:
+  cloudBuildRepository:
+    name: "projects/{{ project_id }}/locations/{{ region }}/connections/github/repositories/{{ repo_name }}"
+    tag: "" # to be injected by automation
+    serviceAccount: "projects/{{ project_id }}/serviceAccounts/{{ service_account }}@{{ project_id }}.iam.gserviceaccount.com"
+    variantsPattern: "*.yaml"
+    path: package/
+target:
+  fleet:
+    project: "projects/{{ project_id }}"
+    # matchLabels:
+    #   foo: bar
+    #   baz: qux
+rolloutStrategy:
+  rolling:
+    maxConcurrent: 1
+variantSelector:
+  variantNameTemplate: "${membership.labels['cluster_group']}"
