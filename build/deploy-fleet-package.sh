@@ -32,7 +32,9 @@ for f in *.yaml; do
     STATE="PENDING"
     RELEASE_NAME=$(echo $TAG | tr . -) # releases are named the same as the tag, but with `-` instead of `.`
 
-    while [[ "$STATE" != "COMPLETE" ]]; do
+    while [[ "$STATE" != "COMPLETED" ]]; do
+        echo "Waiting for rollout $RELEASE_NAME to complete..."
+
         STATE=$(gcloud alpha container fleet packages rollouts list --fleet-package \
             fleet-package --filter="release:$RELEASE_NAME" \
             --project=$PROJECT \
