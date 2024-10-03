@@ -8,23 +8,26 @@ git push origin --tags
 
 for f in *.yaml; do
 
-    envsubst < $f > "rendered-$f"
-    PROJECT_RESOURCE=$(cat "rendered-$f" | yq '.target.fleet.project' -r) # returns format of projects/PROJECT_NAME
+    envsubst < $f > "/tmp/rendered-$f" # Used to replace TAG value in manifest
+    PROJECT_RESOURCE=$(cat "/tmp/rendered-$f" | yq '.target.fleet.project' -r) # returns format of projects/PROJECT_NAME
     PROJECT=${PROJECT_RESOURCE#*/} # strips `projects/` prefix
 
-    gcloud alpha container fleet packages describe fleet-package \
+    PACKAGE_NAME_RESOURCE=$(cat "/tmp/rendered-$f" | yq '.name' -r) # returns format of projects/PROJECT_NAME/locations/REGION/fleetPackages/PACKAGE_NAME
+    PACKAGE_NAME=${PACKAGE_NAME_RESOURCE##*/} # strips `projects/PROJECT_NAME/locations/REGION/fleetPackages/` prefix
+
+    gcloud alpha container fleet packages describe $PACKAGE_NAME \
         --location us-central1 \
         --project=$PROJECT
 
     if [ $? -eq 0 ]; then
         # Trigger new rollout
-        gcloud alpha container fleet packages update fleet-package \
-            --source="rendered-$f" \
+        gcloud alpha container fleet packages update $PACKAGE_NAME \
+            --source="/tmp/rendered-$f" \
             --project=$PROJECT
     else
         # First deployment of package
-        gcloud alpha container fleet packages create fleet-package \
-            --source="rendered-$f" \
+        gcloud alpha container fleet packages create $PACKAGE_NAME \
+            --source="/tmp/rendered-$f" \
             --project=$PROJECT
     fi
 
@@ -38,12 +41,12 @@ for f in *.yaml; do
         STATE=$(gcloud alpha container fleet packages rollouts list --fleet-package \
             fleet-package --filter="release:$RELEASE_NAME" \
             --project=$PROJECT \
-            --format yaml | yq '.info.state')
+            --format yaml | yq '.info.state' -r)
 
         sleep 5
     done
 
-    rm "rendered-$f"
+    rm "/tmp/rendered-$f"
 done 
 
 
