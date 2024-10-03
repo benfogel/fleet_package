@@ -4,16 +4,10 @@ resourceBundleSelector:
     name: "projects/fp-demo-prod1/locations/us-central1/connections/github/repositories/benfogel-fleet_package"
     tag: "$TAG" # to be injected by automation
     serviceAccount: "projects/fp-demo-prod1/serviceAccounts/fp-publisher@fp-demo-prod1.iam.gserviceaccount.com"
-    # variantsPattern: "*.yaml"
     path: package/
 target:
   fleet:
     project: "projects/fp-demo-prod1"
-    # matchLabels:
-    #   foo: bar
-    #   baz: qux
 rolloutStrategy:
   rolling:
     maxConcurrent: 2
-# variantSelector:
-#   variantNameTemplate: "${membership.labels['cluster_group']}"
