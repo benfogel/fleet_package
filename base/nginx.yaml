@@ -29,3 +29,13 @@ spec:
           requests:
             cpu: 500m
             memory: 2Gi
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-cm
+  namespace: default
+data:
+  foo: bar

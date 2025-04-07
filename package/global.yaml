@@ -1,3 +1,11 @@
+apiVersion: v1
+data:
+  foo: bar
+kind: ConfigMap
+metadata:
+  name: nginx-cm
+  namespace: default
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
